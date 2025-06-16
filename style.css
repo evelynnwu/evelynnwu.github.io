@@ -1,0 +1,43 @@
+h1 {
+  font-family: "Ubuntu", sans-serif !important;
+  font-weight: 200 !important;
+  font-size: 80px !important;
+  margin: 30px !important;
+}
+
+h2 {
+  font-family: "Roboto mono", serif;
+  font-weight: 300;
+  font-size: 50px !important;
+  color: rgb(94, 131, 252);
+  margin: 30px !important;
+}
+
+#header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#profile-img {
+  width: 200px;
+  height: auto;
+}
+.fontawesome {
+  margin: 5px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  display: flex;
+}
+
+.fontawesome a,
+a:visited {
+  color: black;
+}
+.fontawesome a:hover,
+.fontawesome button:hover {
+  color: rgb(94, 131, 252);
+  transform: scale(1.15);
+  transition: transform 0.1s;
+}

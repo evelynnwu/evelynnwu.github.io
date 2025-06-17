@@ -4,7 +4,8 @@
   "description": "This is my personal website! Just for fun :)",
   "main": "postcss.config.js",
   "scripts": {
-    "build-css": "tailwindcss -i ./src/style.css -o ./dist/output.css --watch"
+    "build-css": "tailwindcss -i ./src/style.css -o ./dist/output.css --watch",
+    "dev": "serve ."
   },
   "keywords": [],
   "author": "",
@@ -12,6 +13,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
+    "serve": "^14.2.4",
     "tailwindcss": "^3.4.0"
   }
 }

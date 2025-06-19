@@ -1,40 +1,41 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { ReactTyped } from "react-typed";
-import Draggable, { DraggableCore } from "react-draggable";
+import Draggable from "./components/Draggable";
 import "./style.css";
 
 function App() {
-  // React state instead of DOM manipulation
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupScale, setPopupScale] = useState("scale-0");
-  const [isBrowserPopupVisible, setIsBrowserPopupVisible] = useState(false);
-  const handleStop = (e, data) => {
-    // Save the final position
-    setPosition({ x: data.x, y: data.y });
+  const calculateCenterPosition = () => {
+    // Popup dimensions (w-80 = 320px width, estimate height)
+    const popupWidth = 320;
+    const popupHeight = 200; // Estimated height
+
+    return {
+      x: window.innerWidth / 2 - popupWidth / 2,
+      y: window.innerHeight / 2 - popupHeight / 2,
+    };
   };
+
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [centerPosition, setCenterPosition] = useState({ x: 0, y: 0 });
 
   // Event handlers
   const openPopup = () => {
     setIsPopupVisible(true);
   };
   const closePopup = () => {
-    setPopupScale("scale-0");
     setIsPopupVisible(false);
   };
-
-  const openBrowserPopup = () => {
-    setIsBrowserPopupVisible(true);
-  };
-  const closeBrowserPopup = () => {
-    setIsBrowserPopupVisible(false);
-  };
-
   useEffect(() => {
-    if (isPopupVisible) {
-      setPopupScale("scale-100");
-    }
-  });
+    const updatePosition = () => {
+      setCenterPosition(calculateCenterPosition());
+    };
+
+    updatePosition(); // Set initial position
+    window.addEventListener("resize", updatePosition);
+
+    return () => window.removeEventListener("resize", updatePosition);
+  }, []);
   const handlePopupClick = (e) => {
     // Close if clicking the backdrop
     if (e.target === e.currentTarget) {
@@ -62,13 +63,11 @@ function App() {
               a software developer.
             </h2>
           </div>
-          <Draggable>
-            <img
-              src="/Evelyn drawing.png"
-              alt="Drawing of myself"
-              className="absolute bottom-0 right-0 w-40 h-auto translate-x-1/3 translate-y-1/3 scale-150"
-            />
-          </Draggable>
+          <img
+            src="/Evelyn drawing.png"
+            alt="Drawing of myself"
+            className="absolute bottom-0 right-0 w-40 h-auto translate-x-1/3 translate-y-1/3 scale-150"
+          />
         </div>
 
         <div className="p-8">
@@ -80,9 +79,13 @@ function App() {
             >
               <i className="fa-brands fa-linkedin fa-2x hover:text-theme-blue"></i>
             </a>
-            <button onClick={openBrowserPopup}>
+            <a
+              href="https://www.github.com/evelynnwu/"
+              target="_blank"
+              rel="noopener"
+            >
               <i className="fa-brands fa-github fa-2x hover:text-theme-blue"></i>
-            </button>
+            </a>
 
             {/* React event handler instead of getElementById */}
             <button onClick={openPopup}>
@@ -96,51 +99,20 @@ function App() {
               className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
               onClick={handlePopupClick} // Close on backdrop click
             >
-              <div
-                className={`bg-white rounded-lg shadow-lg p-8 relative w-80 text-center transform transition-transform duration-300 ${popupScale}`}
-              >
-                <button
-                  onClick={closePopup} // React event handler
-                  className="absolute top-2 right-3 text-2xl text-gray-400 hover:text-gray-700"
+              <Draggable defaultPosition={centerPosition}>
+                <div
+                  className={`bg-white rounded-lg shadow-lg p-8 relative w-80 text-center transform transition-transform duration-300`}
                 >
-                  &times;
-                </button>
-                <p className="mb-2 text-lg font-semibold">Find me at:</p>
-                <p className="font-mono text-blue-600 break-all">
-                  evelynwu@andrew.cmu.edu
-                </p>
-              </div>
-            </div>
-          )}
-
-          {isBrowserPopupVisible && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4"
-              onClick={(e) => handlePopupClick(e, closeBrowserPopup)}
-            >
-              <Draggable>
-                <div className="bg-white rounded-lg shadow-2xl relative w-full max-w-4xl h-[80vh] transform transition-transform duration-300 scale-100">
-                  {/* Mini browser header */}
-                  <div className="flex items-center gap-2 px-4 py-3 bg-gray-100 rounded-t-lg border-b border-gray-300">
-                    {/* URL bar */}
-
-                    {/* Close button */}
-                    <button
-                      onClick={closeBrowserPopup}
-                      className="text-gray-400 hover:text-gray-700 text-xl font-bold px-2"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  {/* Browser content */}
-                  <div className="h-full">
-                    <iframe
-                      src="https://example.com"
-                      className="w-full h-full rounded-b-lg"
-                      name="GitHub Profile"
-                      style={{ height: "calc(100% - 60px)" }}
-                    />
-                  </div>
+                  <button
+                    onClick={closePopup} // React event handler
+                    className="absolute top-2 right-3 text-2xl text-gray-400 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                  <p className="mb-2 text-lg font-semibold">Find me at:</p>
+                  <p className="font-mono text-blue-600 break-all">
+                    evelynwu@andrew.cmu.edu
+                  </p>
                 </div>
               </Draggable>
             </div>
@@ -151,4 +123,6 @@ function App() {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+const root = createRoot(document.getElementById("root"));
+root.render(<App />);
+export default App;

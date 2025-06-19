@@ -9,6 +9,10 @@ const DraggablePopup = ({
   onClose,
   children,
   defaultPosition,
+  handle = ".popup-handle",
+  zIndex,
+  onBringToFront,
+  id,
   onDrag,
   onStart,
   onStop,
@@ -16,11 +20,14 @@ const DraggablePopup = ({
 }) => {
   return (
     <Draggable
-      handle=".popup-handle"
+      handle={handle}
       defaultPosition={defaultPosition}
       onDrag={onDrag}
       onStart={onStart}
       onStop={onStop}
+      zIndex={zIndex}
+      onBringToFront={onBringToFront}
+      id={id}
     >
       <Popup title={title} onClose={onClose} className={className}>
         {children}

@@ -2,46 +2,83 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { ReactTyped } from "react-typed";
 import Draggable from "./components/Draggable";
+import Popup from "./components/Popup";
+import DraggablePopup from "./components/DraggablePopup";
 import "./style.css";
+import AboutMe from "./components/AboutMe";
 
 function App() {
-  const calculateCenterPosition = () => {
-    // Popup dimensions (w-80 = 320px width, estimate height)
-    const popupWidth = 320;
-    const popupHeight = 200; // Estimated height
+  const calculatePosition = (index) => {
+    const baseX = window.innerWidth / 2 - 160;
+    const baseY = window.innerHeight / 2 - 150;
+    const offset = index * 30; // Stagger by 30px
 
     return {
-      x: window.innerWidth / 2 - popupWidth / 2,
-      y: window.innerHeight / 2 - popupHeight / 2,
+      x: baseX + offset,
+      y: baseY + offset,
     };
   };
 
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [centerPosition, setCenterPosition] = useState({ x: 0, y: 0 });
+  const [openPopups, setOpenPopups] = useState([]);
+  const [highestZIndex, setHighestZIndex] = useState(1000);
 
-  // Event handlers
-  const openPopup = () => {
-    setIsPopupVisible(true);
-  };
-  const closePopup = () => {
-    setIsPopupVisible(false);
-  };
-  useEffect(() => {
-    const updatePosition = () => {
-      setCenterPosition(calculateCenterPosition());
-    };
-
-    updatePosition(); // Set initial position
-    window.addEventListener("resize", updatePosition);
-
-    return () => window.removeEventListener("resize", updatePosition);
-  }, []);
-  const handlePopupClick = (e) => {
-    // Close if clicking the backdrop
-    if (e.target === e.currentTarget) {
-      closePopup();
+  const openPopup = (type, title, content) => {
+    // Check if popup of this type is already open
+    const existingPopup = openPopups.find((popup) => popup.type === type);
+    if (existingPopup) {
+      bringToFront(existingPopup.id);
+      return;
     }
+
+    // Create new popup
+    const newPopup = {
+      id: Date.now(),
+      type,
+      title,
+      content,
+      position: calculatePosition(openPopups.length),
+      zIndex: highestZIndex + 1,
+    };
+
+    setHighestZIndex(newPopup.zIndex);
+    setOpenPopups((prev) => [...prev, newPopup]);
   };
+
+  const closePopup = (id) => {
+    setOpenPopups((prev) => prev.filter((popup) => popup.id !== id));
+  };
+
+  const bringToFront = (id) => {
+    const newZIndex = highestZIndex + 1;
+    setHighestZIndex(newZIndex);
+    setOpenPopups((prev) =>
+      prev.map((popup) =>
+        popup.id === id ? { ...popup, zIndex: newZIndex } : popup
+      )
+    );
+  };
+
+  const openAboutPopup = () => openPopup("about", "About Me", <AboutMe />);
+  const openEmailPopup = () =>
+    openPopup(
+      "email",
+      "Contact",
+      <div className="text-center">
+        <p className="mb-2 text-lg font-semibold">Find me at:</p>
+        <p className="font-mono text-blue-600 break-all">
+          evelynwu@andrew.cmu.edu
+        </p>
+      </div>
+    );
+  // Handle window resize to recalculate positions if needed
+  useEffect(() => {
+    const handleResize = () => {
+      // Optionally recalculate popup positions on resize
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="min-h-screen justify-center translate-y--1/3 p-4">
@@ -66,57 +103,50 @@ function App() {
           <img
             src="/Evelyn drawing.png"
             alt="Drawing of myself"
-            className="absolute bottom-0 right-0 w-40 h-auto translate-x-1/3 translate-y-1/3 scale-150"
+            className="absolute bottom-0 right-0 h-auto translate-x-1/3 translate-y-1/3 w-40 scale-150"
           />
         </div>
 
         <div className="p-8">
-          <div className="fontawesome">
+          <div className="fontawesome fa-2x">
+            <button onClick={openAboutPopup}>
+              <i className="fa-solid fa-circle-info hover:text-theme-blue"></i>
+            </button>
             <a
               href="https://www.linkedin.com/in/evelynnwu/"
               target="_blank"
               rel="noopener"
             >
-              <i className="fa-brands fa-linkedin fa-2x hover:text-theme-blue"></i>
+              <i className="fa-brands fa-linkedin hover:text-theme-blue"></i>
             </a>
             <a
               href="https://www.github.com/evelynnwu/"
               target="_blank"
               rel="noopener"
             >
-              <i className="fa-brands fa-github fa-2x hover:text-theme-blue"></i>
+              <i className="fa-brands fa-github hover:text-theme-blue"></i>
             </a>
 
             {/* React event handler instead of getElementById */}
-            <button onClick={openPopup}>
-              <i className="fa-solid fa-envelope fa-2x hover:text-theme-blue"></i>
+            <button onClick={openEmailPopup}>
+              <i className="fa-solid fa-envelope hover:text-theme-blue"></i>
             </button>
           </div>
 
-          {/* Conditional rendering instead of hidden class */}
-          {isPopupVisible && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-              onClick={handlePopupClick} // Close on backdrop click
+          {/* Render all open popups */}
+          {openPopups.map((popup) => (
+            <DraggablePopup
+              key={popup.id}
+              id={popup.id}
+              title={popup.title}
+              defaultPosition={popup.position}
+              zIndex={popup.zIndex}
+              onClose={() => closePopup(popup.id)}
+              onBringToFront={() => bringToFront(popup.id)}
             >
-              <Draggable defaultPosition={centerPosition}>
-                <div
-                  className={`bg-white rounded-lg shadow-lg p-8 relative w-80 text-center transform transition-transform duration-300`}
-                >
-                  <button
-                    onClick={closePopup} // React event handler
-                    className="absolute top-2 right-3 text-2xl text-gray-400 hover:text-gray-700"
-                  >
-                    &times;
-                  </button>
-                  <p className="mb-2 text-lg font-semibold">Find me at:</p>
-                  <p className="font-mono text-blue-600 break-all">
-                    evelynwu@andrew.cmu.edu
-                  </p>
-                </div>
-              </Draggable>
-            </div>
-          )}
+              {popup.content}
+            </DraggablePopup>
+          ))}
         </div>
       </div>
     </div>

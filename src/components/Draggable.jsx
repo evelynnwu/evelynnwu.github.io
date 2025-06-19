@@ -8,19 +8,24 @@ const Draggable = ({
   onDrag,
   onStart,
   onStop,
+  zIndex,
+  onBringToFront,
+  id,
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const elementRef = useRef(null);
 
   const handleMouseDown = (e) => {
     if (disabled) return;
 
     if (handle && !e.target.closest(handle)) return;
 
+    // Bring to front when clicked
+    onBringToFront?.(id);
+
     setIsDragging(true);
-    const rect = elementRef.current.getBoundingClientRect();
+    const rect = e.currentTarget.getBoundingClientRect();
     const offset = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -71,14 +76,13 @@ const Draggable = ({
 
   return (
     <div
-      ref={elementRef}
       onMouseDown={handleMouseDown}
       style={{
         position: "fixed",
         left: position.x,
         top: position.y,
         cursor: isDragging ? "grabbing" : handle ? "default" : "grab",
-        zIndex: isDragging ? 1000 : 999,
+        zIndex: zIndex,
         userSelect: "none",
       }}
     >

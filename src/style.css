@@ -27,7 +27,7 @@ h2 {
   margin: 5px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 30px;
   display: flex;
 }
 
@@ -35,8 +35,7 @@ h2 {
 a:visited {
   color: black;
 }
-.fontawesome a:hover,
-.fontawesome button:hover {
+.fontawesome :hover {
   transform: scale(1.15);
-  transition: transform 0.1s;
+  transition: transform 0.15s;
 }

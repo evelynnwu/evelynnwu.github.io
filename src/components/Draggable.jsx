@@ -2,61 +2,58 @@ import React, { useState, useRef, useEffect } from "react";
 
 const Draggable = ({
   children,
-  handle,
-  disabled = false,
-  defaultPosition = { x: 0, y: 0 },
-  onDrag,
-  onStart,
-  onStop,
-  zIndex,
-  onBringToFront,
   id,
+  defaultPosition = { x: 0, y: 0 },
+  handle = ".popup-handle", // Changed to match Popup component
+  zIndex = 1,
+  onBringToFront,
+  onPositionChange,
 }) => {
   const [position, setPosition] = useState(defaultPosition);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const elementRef = useRef(null);
 
   const handleMouseDown = (e) => {
-    if (disabled) return;
-
-    if (handle && !e.target.closest(handle)) return;
-
-    // Bring to front when clicked
-    onBringToFront?.(id);
-
-    setIsDragging(true);
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offset = {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
-    setDragOffset(offset);
-
-    // Call onStart callback
-    onStart?.(e, { x: position.x, y: position.y });
+    // Check if the click is on the drag handle
+    const handleElement = elementRef.current?.querySelector(handle);
+    if (!handleElement?.contains(e.target)) return;
 
     e.preventDefault();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+
+    // Bring to front when starting to drag
+    if (onBringToFront) {
+      onBringToFront(id);
+    }
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
 
     const newPosition = {
-      x: e.clientX - dragOffset.x,
-      y: e.clientY - dragOffset.y,
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
     };
 
     setPosition(newPosition);
-
-    // Call onDrag callback
-    onDrag?.(e, newPosition);
+    if (onPositionChange) {
+      onPositionChange(id, newPosition);
+    }
   };
 
-  const handleMouseUp = (e) => {
-    if (isDragging) {
-      setIsDragging(false);
-      // Call onStop callback
-      onStop?.(e, { x: position.x, y: position.y });
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleClick = (e) => {
+    // Bring to front on any click (not just drag handle)
+    if (onBringToFront && !isDragging) {
+      onBringToFront(id);
     }
   };
 
@@ -64,27 +61,28 @@ const Draggable = ({
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
-      document.body.style.userSelect = "none";
-
       return () => {
         document.removeEventListener("mousemove", handleMouseMove);
         document.removeEventListener("mouseup", handleMouseUp);
-        document.body.style.userSelect = "";
       };
     }
-  }, [isDragging, dragOffset]);
+  }, [isDragging]); // Removed dragStart from dependencies
 
   return (
     <div
-      onMouseDown={handleMouseDown}
+      ref={elementRef}
       style={{
         position: "fixed",
         left: position.x,
         top: position.y,
-        cursor: isDragging ? "grabbing" : handle ? "default" : "grab",
         zIndex: zIndex,
-        userSelect: "none",
+        userSelect: isDragging ? "none" : "auto",
+        transform: isDragging ? "scale(1.02)" : "scale(1)",
+        transition: isDragging ? "none" : "transform 0.2s ease",
+        willChange: "transform",
       }}
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       {children}
     </div>

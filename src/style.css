@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
+:root {
   --font-display: "Ubuntu", "sans-serif";
+  --button-color: rgb(236, 196, 33);
 }
 h1 {
   margin: 30px !important;
@@ -29,11 +30,12 @@ h2 {
   justify-content: center;
   gap: 30px;
   display: flex;
+  color: var(--button-color);
 }
 
 .fontawesome a,
 a:visited {
-  color: black;
+  color: var(--button-color);
 }
 .fontawesome :hover {
   transform: scale(1.15);

@@ -1,16 +1,18 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./*.{html, jsx}",
+    "./*.{html, jsx,css}",
     "./src/**/*.{html,js,jsx}",
     "./components/**/*.jsx",
   ],
   theme: {
     extend: {
       colors: {
-        "theme-blue": "rgb(94, 131, 252)",
-        "theme-lb": "rgb(150, 173, 250)",
-        "theme-purple": "rgb(162, 151, 255)",
+        "theme-blue": "rgb(117, 148, 250)",
+        "theme-lb": "rgb(138, 160, 237)",
+        "theme-yellow": "rgb(234, 188, 7)",
+        "theme-gray": "rgb(59, 63, 69)",
+        "yellow-hover": "rgb(209, 168, 5)",
       },
       fontFamily: {
         header: ["Ubuntu", "sans serif"],

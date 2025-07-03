@@ -6,14 +6,16 @@ const AboutMe = ({ onClose, id }) => {
     <Popup title="About Me" onClose={onClose}>
       <div className="space-y-4">
         <div className="text-center">
-          <h3 className="text-xl font-bold text-yellow-hover ">Evelyn Wu</h3>
-          <h4 className="text-lg text-gray-600">
-            ✨ Statistics and Machine Learning + AI @ CMU{" "}
+          <h3 className="text-xl font-semibold text-yellow-hover font-header">
+            Evelyn Wu
+          </h3>
+          <h4 className="text-lg text-gray-600 font-normal">
+            AI + Statistics and Machine Learning @ CMU{" "}
           </h4>
         </div>
         <hr className="text-theme-blue" />
 
-        <div className="overflow-y-auto max-h-80 space-y-3 text-gray-700">
+        <div className="overflow-y-auto max-h-80 space-y-3 text-gray-700 font-normal text-[14px]">
           <p>
             Hi! I'm an undergraduate student at CMU pursuing a double major in
             Statistics and Machine Learning + AI. I've had some fun working in
@@ -46,7 +48,7 @@ const AboutMe = ({ onClose, id }) => {
           </p>
 
           <div className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="font-semibold mb-2">
+            <h4 className="font-[400] mb-2">
               🛠️ Currently working on: using my MCP infrastructure to build
               platform integration tools to monitor Savant's workflows and
               system status

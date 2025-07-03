@@ -27,21 +27,12 @@ function App() {
     { type: "about", component: AboutMe, title: "About Me" },
   ];
 
-  /*const { ref: scrambleRef1 } = useScramble({
-    text: "Hi! I'm Evelyn.",
-    speed: 0.5,
-    tick: 1,
-    step: 1,
-    scramble: 10,
-    seed: 100,
-  });*/
-
   const { ref: scrambleRef2 } = useScramble({
-    text: "currently nineteen, sophomore at CMU, doing things for fun",
+    text: "currently: nineteen, studying AI and Statistics + Machine Learning @ CMU, and messing around with the latest AI technologies",
     speed: 0.8,
     tick: 2,
-    step: 1,
-    scramble: 10,
+    step: 5,
+    scramble: 6,
     seed: 100,
   });
 
@@ -107,7 +98,7 @@ function App() {
 
         <div id="header-row">
           <div>
-            <h1 className="font-header text-[80px] font-[300] text-theme-gray">
+            <h1 className="font-header text-[75px] font-[300] text-theme-gray padding-[5px]">
               <ReactTyped
                 strings={["Hi! I'm Evelyn,"]}
                 typeSpeed={30}
@@ -115,7 +106,7 @@ function App() {
             </h1>
             <h2
               ref={scrambleRef2}
-              className="font-normal text-[30px] font-[300] text-theme-blue"
+              className="font-normal text-[20px] font-[300] text-theme-blue"
             ></h2>
           </div>
           <img

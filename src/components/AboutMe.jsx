@@ -42,7 +42,7 @@ const AboutMe = ({ onClose, id }) => {
               MCP
             </a>
             (Model Context Protocol) server framework that bridges REST APIs
-            with the emergings MCP protocol standard.
+            with the emerging MCP protocol standard.
           </p>
 
           <div className="bg-gray-50 p-3 rounded-lg">
